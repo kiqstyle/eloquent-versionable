@@ -2,6 +2,7 @@
 
 namespace Kiqstyle\EloquentVersionable;
 
+use Illuminate\Database\Eloquent\Model;
 use Kiqstyle\EloquentVersionable\Test\Models\Versioning\DummyVersioning;
 use Illuminate\Support\Str;
 use ReflectionClass;
@@ -12,19 +13,19 @@ trait Versionable
     {
         static::addGlobalScope(new VersionableScope());
 
-        static::saved(function ($model) {
+        static::saved(function (Model $model) {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 VersioningPersistence::createVersionedRecord($model);
             }
         });
 
-        static::updated(function ($model) {
+        static::updated(function (Model $model) {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 VersioningPersistence::updateNextColumnOfLastVersionedRegister($model);
             }
         });
 
-        static::deleted(function ($model) {
+        static::deleted(function (Model $model) {
             if ($model->isVersioningEnabled()) {
                 VersioningPersistence::updateNextColumnOfLastVersionedRegister($model);
                 VersioningPersistence::createDeletedVersionedRecord($model);
@@ -41,9 +42,8 @@ trait Versionable
 
     public function getTable()
     {
-        // My eyes, it burns T_T
-        // When save or create (create calls save), get original table name, when using find get versioned table
-        $calledBy = debug_backtrace()[3]['function'];
+        [$one, $two, $three, $caller] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
+        $calledBy = $caller['function'];
 
         $methods = [
             'save',
@@ -52,7 +52,7 @@ trait Versionable
             'performDeleteOnModel',
             'create',
             'updateOrCreate',
-            'addUpdatedAtColumn'
+            'addUpdatedAtColumn',
         ];
 
         if (versioningDate()->issetDate() && ($this->isVersioningEnabled() && !in_array($calledBy, $methods))) {
