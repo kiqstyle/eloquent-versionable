@@ -2,8 +2,9 @@
 
 namespace Kiqstyle\EloquentVersionable;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Kiqstyle\EloquentVersionable\Test\Models\Versioning\DummyVersioning;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use ReflectionClass;
 
@@ -13,22 +14,48 @@ trait Versionable
     {
         static::addGlobalScope(new VersionableScope());
 
+        $callback = function (Model $model) {
+            if ($model->isVersioningEnabled()) {
+                DB::beginTransaction();
+            }
+        };
+        static::saving($callback);
+
         static::saved(function (Model $model) {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
-                VersioningPersistence::createVersionedRecord($model);
+                try {
+                    app(VersioningPersistence::class)->createVersionedRecord($model);
+                    DB::commit();
+                } catch (Exception $e) {
+                    DB::rollBack();
+                }
             }
         });
+
+        static::updating($callback);
 
         static::updated(function (Model $model) {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
-                VersioningPersistence::updateNextColumnOfLastVersionedRegister($model);
+                try {
+                    app(VersioningPersistence::class)->updateNextColumnOfLastVersionedRegister($model);
+                    DB::commit();
+                } catch (Exception $e) {
+                    DB::rollBack();
+                }
             }
         });
 
+        static::deleting($callback);
+
         static::deleted(function (Model $model) {
             if ($model->isVersioningEnabled()) {
-                VersioningPersistence::updateNextColumnOfLastVersionedRegister($model);
-                VersioningPersistence::createDeletedVersionedRecord($model);
+                try {
+                    app(VersioningPersistence::class)->updateNextColumnOfLastVersionedRegister($model);
+                    app(VersioningPersistence::class)->createDeletedVersionedRecord($model);
+                    DB::commit();
+                } catch (Exception $e) {
+                    DB::rollBack();
+                }
             }
         });
     }
