@@ -15,7 +15,7 @@ trait Versionable
         static::addGlobalScope(new VersionableScope());
 
         $callback = function (Model $model) {
-            if ($model->isVersioningEnabled()) {
+            if ($model->isVersioningEnabled() && $model->isDirty()) {
                 DB::beginTransaction();
             }
         };
@@ -45,7 +45,11 @@ trait Versionable
             }
         });
 
-        static::deleting($callback);
+        static::deleting(function (Model $model) {
+            if ($model->isVersioningEnabled()) {
+                DB::beginTransaction();
+            }
+        });
 
         static::deleted(function (Model $model) {
             if ($model->isVersioningEnabled()) {
