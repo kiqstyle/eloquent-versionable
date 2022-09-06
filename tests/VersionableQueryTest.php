@@ -3,6 +3,7 @@
 namespace Kiqstyle\EloquentVersionable\Test;
 
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Kiqstyle\EloquentVersionable\SyncManyToManyWithVersioning;
 use Kiqstyle\EloquentVersionable\Test\Models\Competency;
 use Kiqstyle\EloquentVersionable\Test\Models\Employee;
@@ -201,5 +202,21 @@ class VersionableQueryTest extends TestCase
         $this->assertDatabaseMissing('employees', ['name' => 'New employee', 'deleted_at' => '2020-01-01 12:00:00']);
         $this->assertDatabaseMissing('employees_versioning', ['name' => 'New employee', 'next' => '2020-01-01 12:00:00', 'deleted_at' => null]);
         $this->assertDatabaseMissing('employees_versioning', ['name' => 'New employee', 'deleted_at' => '2020-01-01 12:00:00', 'next' => null]);
+    }
+
+    /** @test */
+    public function it_should_not_let_a_transaction_opened()
+    {
+        $employee = Employee::create(['name' => 'zika']);
+        $employee->update(['name' => 'updated']);
+        // When versioning was trying to update again, it would let a transaction opened
+        $employee->update(['name' => 'updated']);
+
+        Employee::create(['name' => 'New employee']);
+        // if there was a transaction opened, it would rollBack after script end
+        DB::rollBack();
+
+        // losing all data that should not be on a transaction
+        $this->assertDatabaseHas('employees', ['name' => 'New employee']);
     }
 }
