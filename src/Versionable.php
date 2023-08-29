@@ -28,6 +28,7 @@ trait Versionable
                     DB::commit();
                 } catch (Exception $e) {
                     DB::rollBack();
+                    throw $e;
                 }
             }
         });
@@ -41,6 +42,7 @@ trait Versionable
                     DB::commit();
                 } catch (Exception $e) {
                     DB::rollBack();
+                    throw $e;
                 }
             }
         });
@@ -59,6 +61,7 @@ trait Versionable
                     DB::commit();
                 } catch (Exception $e) {
                     DB::rollBack();
+                    throw $e;
                 }
             }
         });
