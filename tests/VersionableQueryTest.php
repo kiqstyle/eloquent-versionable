@@ -150,6 +150,8 @@ class VersionableQueryTest extends TestCase
     /** @test */
     public function it_should_not_create_original_register_when_versioning_fail()
     {
+        $this->expectException(Exception::class);
+
         $this->mock(VersioningPersistence::class, function (MockInterface $mock) {
             $mock->shouldReceive('createVersionedRecord')
                 ->andThrow(new Exception('Failed to create.'));
@@ -166,6 +168,8 @@ class VersionableQueryTest extends TestCase
     /** @test */
     public function it_should_not_update_original_register_when_versioning_fail()
     {
+        $this->expectException(Exception::class);
+
         $employee = Employee::create([
             'name' => 'New employee'
         ]);
@@ -187,6 +191,8 @@ class VersionableQueryTest extends TestCase
     /** @test */
     public function it_should_not_delete_original_register_when_versioning_fail()
     {
+        $this->expectException(Exception::class);
+
         $employee = Employee::create([
             'name' => 'New employee'
         ]);
