@@ -1,0 +1,6 @@
+version: '3'
+services:
+    kiqstyle-eloquent-versionable:
+        image: php:8.0-apache
+        volumes:
+            - "./:/var/www/html"
