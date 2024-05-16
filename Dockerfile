@@ -1,4 +1,4 @@
-FROM php:8.0-apache
+FROM php:8.2-apache
 
 # copy Composer PHAR from the Composer image into the PHP image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
