@@ -9,9 +9,9 @@ use Carbon\Carbon;
  */
 class VersioningDate
 {
-    private $date;
+    private ?Carbon $date;
 
-    public function setDate($date = null)
+    public function setDate(null|string|Carbon $date = null): self
     {
         if (is_null($date)) {
             $date = Carbon::now();
@@ -26,18 +26,18 @@ class VersioningDate
         return $this;
     }
 
-    public function getDate()
+    public function getDate(): Carbon
     {
         return $this->date;
     }
 
-    public function unsetDate()
+    public function unsetDate(): void
     {
         $this->date = null;
     }
 
-    public function issetDate()
+    public function issetDate(): bool
     {
-        return $this->date;
+        return (bool) $this->date;
     }
 }

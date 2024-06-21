@@ -11,7 +11,7 @@ composer-autoload:
 	docker compose exec $(DOCKER_PHP) composer dumpautoload
 
 ### TESTS ###
-phpunit:
+test:
 	docker compose exec $(DOCKER_PHP) ./vendor/bin/phpunit $(param) --no-coverage
 
 ### UTILS ###

@@ -3,10 +3,7 @@
 use Kiqstyle\EloquentVersionable\VersioningDate;
 
 if (!function_exists('versioningDate')) {
-    /**
-     * @return VersioningDate
-     */
-    function versioningDate()
+    function versioningDate(): VersioningDate
     {
         return app('versioningDate');
     }

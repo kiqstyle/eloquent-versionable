@@ -8,7 +8,7 @@ interface VersionableContract
 
     public function isVersioningEnabled();
 
-    public function setVersioningEnabled($versioningEnabled);
+    public function setVersioningEnabled(bool $versioningEnabled);
 
     public function getVersioningModel();
 
