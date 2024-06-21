@@ -3,10 +3,10 @@
 namespace Kiqstyle\EloquentVersionable\Test;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Kiqstyle\EloquentVersionable\Test\Models\Employee;
-use Kiqstyle\EloquentVersionable\Test\Models\DummyBelongsTo;
 use Kiqstyle\EloquentVersionable\Test\Models\Position;
-use Kiqstyle\EloquentVersionable\Test\Models\Versioning\EmployeeVersioning;
 use Kiqstyle\EloquentVersionable\VersioningServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 use Orchestra\Testbench\TestCase as Orchestra;
@@ -21,11 +21,6 @@ abstract class TestCase extends Orchestra
         $this->setUpDatabase();
     }
 
-    /**
-     * @param \Illuminate\Foundation\Application $app
-     *
-     * @return array
-     */
     protected function getPackageProviders($app)
     {
         return [
@@ -33,10 +28,7 @@ abstract class TestCase extends Orchestra
         ];
     }
 
-    /**
-     * @param \Illuminate\Foundation\Application $app
-     */
-    protected function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app): void
     {
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite', [
@@ -46,7 +38,7 @@ abstract class TestCase extends Orchestra
         ]);
     }
 
-    protected function setUpDatabase()
+    protected function setUpDatabase(): void
     {
         $this->app['db']->connection()->getSchemaBuilder()->create('employees', function (Blueprint $table) {
             $table->increments('id');
@@ -137,19 +129,19 @@ abstract class TestCase extends Orchestra
         });
     }
 
-    protected function update($entity, $attributes)
+    protected function update(Model $entity, array $attributes)
     {
         Carbon::setTestNow(Carbon::now()->addSecond());
         $entity->update($attributes);
     }
 
-    protected function setFakeNow($time = '2019-01-01 12:00:00')
+    protected function setFakeNow(string $time = '2019-01-01 12:00:00'): void
     {
         $time = Carbon::createFromFormat('Y-m-d H:i:s', $time);
-        return Carbon::setTestNow($time);
+        Carbon::setTestNow($time);
     }
 
-    protected function assertOriginalEqualsVersioning($original, $versioned)
+    protected function assertOriginalEqualsVersioning(Model $original, Model $versioned): void
     {
         $this->assertEquals($original->id, $versioned->id);
         $this->assertEquals($original->name, $versioned->name);
@@ -161,11 +153,7 @@ abstract class TestCase extends Orchestra
         $this->assertNull($versioned->next);
     }
 
-    /**
-     * @param $entity
-     * @return EmployeeVersioning|\Illuminate\Database\Eloquent\Model|\Illuminate\Database\Query\Builder|object|null
-     */
-    protected function getVersioned($entity)
+    protected function getVersioned(Model $entity): Collection
     {
         return $entity->withoutGlobalScopes()->where('id', $entity->id)->get();
     }

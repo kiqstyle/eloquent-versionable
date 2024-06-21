@@ -2,16 +2,18 @@
 
 namespace Kiqstyle\EloquentVersionable;
 
+use Illuminate\Database\Eloquent\Model;
+
 class SyncManyToManyWithVersioning
 {
-    private $entity;
-    private $manyToManyRelation;
-    private $fields = [
+    private Model $entity;
+    private Model $manyToManyRelation;
+    private array $fields = [
         'entityKey' => null,
         'relationKey' => null
     ];
 
-    public function run($entity, array $newRelationsIds, $manyToManyRelation, array $fields)
+    public function run(Model $entity, array $newRelationsIds, Model $manyToManyRelation, array $fields)
     {
         $this->entity = $entity;
         $this->manyToManyRelation = $manyToManyRelation;
@@ -28,7 +30,7 @@ class SyncManyToManyWithVersioning
         $this->createRelations($relationsToInclude);
     }
 
-    private function removeRelations($relationsToExclude)
+    private function removeRelations(array $relationsToExclude): void
     {
         foreach ($relationsToExclude as $relationId) {
             $relationToExclude = $this->manyToManyRelation->where($this->fields['relationKey'], $relationId)
@@ -39,7 +41,7 @@ class SyncManyToManyWithVersioning
         }
     }
 
-    private function createRelations($relationsToInclude)
+    private function createRelations(array $relationsToInclude): void
     {
         foreach ($relationsToInclude as $relationId) {
             $data = [

@@ -2,7 +2,7 @@
 
 namespace Kiqstyle\EloquentVersionable\Test\Models;
 
-use Kiqstyle\EloquentVersionable\Test\Models\Versioning\PositionVersioning;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Kiqstyle\EloquentVersionable\VersionedModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Position extends VersionedModel
 {
-    public function competencies()
+    public function competencies(): BelongsToMany
     {
         $pivot = new PositionCompetency;
 

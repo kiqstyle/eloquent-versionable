@@ -2,13 +2,10 @@
 
 namespace Kiqstyle\EloquentVersionable\Test\Models;
 
-use Kiqstyle\EloquentVersionable\Test\Models\Versioning\EmployeeVersioning;
-use Kiqstyle\EloquentVersionable\Versionable;
-use Kiqstyle\EloquentVersionable\VersionableContract;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Kiqstyle\EloquentVersionable\VersionedModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Employee
@@ -18,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Employee extends VersionedModel
 {
-    public function position()
+    public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class);
     }

@@ -2,7 +2,6 @@
 
 namespace Kiqstyle\EloquentVersionable\Test\Models;
 
-use Kiqstyle\EloquentVersionable\Test\Models\Versioning\PositionCompetencyVersioning;
 use Kiqstyle\EloquentVersionable\VersionedModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
