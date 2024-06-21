@@ -13,7 +13,7 @@ class SyncManyToManyWithVersioning
         'relationKey' => null
     ];
 
-    public function run(Model $entity, array $newRelationsIds, Model $manyToManyRelation, array $fields)
+    public function run(Model $entity, array $newRelationsIds, Model $manyToManyRelation, array $fields): void
     {
         $this->entity = $entity;
         $this->manyToManyRelation = $manyToManyRelation;

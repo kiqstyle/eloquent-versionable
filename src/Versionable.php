@@ -15,14 +15,14 @@ trait Versionable
     {
         static::addGlobalScope(new VersionableScope());
 
-        $callback = function (Model $model) {
+        $callback = function (Versionable|Model $model) {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 DB::beginTransaction();
             }
         };
         static::saving($callback);
 
-        static::saved(function (Model $model) {
+        static::saved(function (Versionable|Model $model) {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 try {
                     app(VersioningPersistence::class)->createVersionedRecord($model);
@@ -36,7 +36,7 @@ trait Versionable
 
         static::updating($callback);
 
-        static::updated(function (Model $model) {
+        static::updated(function (Versionable|Model $model) {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 try {
                     app(VersioningPersistence::class)->updateNextColumnOfLastVersionedRegister($model);
@@ -48,13 +48,13 @@ trait Versionable
             }
         });
 
-        static::deleting(function (Model $model) {
+        static::deleting(function (Versionable|Model $model) {
             if ($model->isVersioningEnabled()) {
                 DB::beginTransaction();
             }
         });
 
-        static::deleted(function (Model $model) {
+        static::deleted(function (Versionable|Model $model) {
             if ($model->isVersioningEnabled()) {
                 try {
                     app(VersioningPersistence::class)->updateNextColumnOfLastVersionedRegister($model);
@@ -176,7 +176,7 @@ trait Versionable
         // This method just provides a convenient way for us to generate fresh model
         // instances of this current model. It is particularly useful during the
         // hydration of new objects via the Eloquent query builder instances.
-        $model = new static((array) $attributes);
+        $model = new static();
 
         $model->exists = $exists;
 
@@ -185,6 +185,7 @@ trait Versionable
         );
 
         $model->setTable($this->getOriginalTable());
+        $model->fill($attributes);
 
         return $model;
     }

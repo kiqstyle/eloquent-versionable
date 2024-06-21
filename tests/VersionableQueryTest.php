@@ -115,8 +115,8 @@ class VersionableQueryTest extends TestCase
 
         $employee = Employee::with('position')->first();
 
-        $this->assertEquals($employee->position->id, 1);
-        $this->assertEquals($employee->position->name, 'updated 2019');
+        $this->assertEquals(1, $employee->position->id);
+        $this->assertEquals('updated 2019', $employee->position->name);
         $this->assertNotNull($employee->position->next);
     }
 
@@ -175,7 +175,7 @@ class VersionableQueryTest extends TestCase
         ]);
 
         $this->partialMock(VersioningPersistence::class, function (MockInterface $mock) {
-            // when updating, the last method to by called is createVersionedRecord
+            // when updating, the last method to be called is createVersionedRecord
             $mock->shouldReceive('createVersionedRecord')
                 ->andThrow(new Exception('Failed to update.'));
         });
@@ -219,7 +219,7 @@ class VersionableQueryTest extends TestCase
         $employee->update(['name' => 'updated']);
 
         Employee::create(['name' => 'New employee']);
-        // if there was a transaction opened, it would rollBack after script end
+        // if there was a transaction opened, it would roll back after script end
         DB::rollBack();
 
         // losing all data that should not be on a transaction

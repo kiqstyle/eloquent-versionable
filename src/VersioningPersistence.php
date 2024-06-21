@@ -33,7 +33,7 @@ class VersioningPersistence
         $versionedInstance->save();
     }
 
-    private static function getVersionedModel(Model $model): VersionedModel
+    private static function getVersionedModel(Versionable|Model $model): Model|VersionedModel
     {
         $versionedClassName = $model->getVersioningModel();
         return new $versionedClassName;

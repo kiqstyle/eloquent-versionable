@@ -17,7 +17,7 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->setFakeNow('2019-01-01 12:00:00');
+        $this->setFakeNow();
         $this->setUpDatabase();
     }
 
@@ -129,16 +129,18 @@ abstract class TestCase extends Orchestra
         });
     }
 
-    protected function update(Model $entity, array $attributes)
+    protected function update(Model $entity, array $attributes): void
     {
         Carbon::setTestNow(Carbon::now()->addSecond());
         $entity->update($attributes);
     }
 
-    protected function setFakeNow(string $time = '2019-01-01 12:00:00'): void
+    protected function setFakeNow(string $time = '2019-01-01 12:00:00'): Carbon
     {
         $time = Carbon::createFromFormat('Y-m-d H:i:s', $time);
         Carbon::setTestNow($time);
+
+        return $time;
     }
 
     protected function assertOriginalEqualsVersioning(Model $original, Model $versioned): void
