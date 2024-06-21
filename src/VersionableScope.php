@@ -20,15 +20,15 @@ class VersionableScope implements Scope
 
         $datetime = versioningDate()->getDate()->format('Y-m-d H:i:s');
 
-        $updatedAt = $model->getUpdatedAtColumn();
-        $next = $model->getQualifiedNxtColumn();
-        $builder->where($model->getVersioningTable() . '.' . $updatedAt, '<=', $datetime)
+        $versionedAt = $model->getVersionedAtColumn();
+        $next = $model->getQualifiedNextColumn();
+        $builder->where($model->getVersioningTable() . '.' . $versionedAt, '<=', $datetime)
             ->where(fn (Builder $q) => $q->where($next, '>', $datetime)->orWhereNull($next));
 
         $joins = $builder->getQuery()->joins ?? [];
         foreach ($joins as $join) {
             if (str_contains($join->table, '_versioning')) {
-                $builder->where($join->table . '.' . $updatedAt, '<=', $datetime)
+                $builder->where($join->table . '.' . $versionedAt, '<=', $datetime)
                     ->whereNull($join->table . '.' . $model->getDeletedAtColumn())
                     ->where(function (Builder $q) use ($datetime, $join, $model) {
                         $q->where($join->table . '.' . $model->getNextColumn(), '>', $datetime)

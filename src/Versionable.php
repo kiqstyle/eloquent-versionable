@@ -139,6 +139,11 @@ trait Versionable
         return $this::VERSIONED_TABLE !== null ? $this::VERSIONED_TABLE : $this->getOriginalTable() . '_versioning';
     }
 
+    public function getVersionedAtColumn(): string
+    {
+        return ($this::VERSIONED_AT_COLUMN !== null) ? $this::VERSIONED_AT_COLUMN : 'next';
+    }
+
     /**
      * Get the name of the column for applying the scope.
      */
@@ -150,7 +155,7 @@ trait Versionable
     /**
      * Get the fully qualified column name for applying the scope.
      */
-    public function getQualifiedNxtColumn(): string
+    public function getQualifiedNextColumn(): string
     {
         return $this->getVersioningTable() . '.' . $this->getNextColumn();
     }

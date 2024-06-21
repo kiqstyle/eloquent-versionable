@@ -9,6 +9,8 @@ class VersionedModel extends Model implements VersionableContract
 {
     use SoftDeletes, Versionable;
 
+    const VERSIONED_AT_COLUMN = "versioned_at";
+
     const NEXT_COLUMN = "next";
 
     const VERSIONED_TABLE = null;

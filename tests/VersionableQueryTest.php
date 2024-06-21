@@ -11,6 +11,7 @@ use Kiqstyle\EloquentVersionable\Test\Models\Position;
 use Kiqstyle\EloquentVersionable\Test\Models\PositionCompetency;
 use Kiqstyle\EloquentVersionable\VersioningPersistence;
 use Mockery\MockInterface;
+use function Pest\version;
 
 class VersionableQueryTest extends TestCase
 {
@@ -56,8 +57,8 @@ class VersionableQueryTest extends TestCase
 
         $employee = Employee::find($employee->id);
 
-        $this->assertEquals($employee->id, 1);
-        $this->assertEquals($employee->name, 'updated 2019');
+        $this->assertEquals(1, $employee->id);
+        $this->assertEquals('updated 2019', $employee->name);
         $this->assertNotNull($employee->next);
     }
 
@@ -145,6 +146,35 @@ class VersionableQueryTest extends TestCase
         $this->assertEquals(1, $position->competencies->get(0)->id);
         $this->assertEquals(2, $position->competencies->get(1)->id);
         $this->assertEquals(3, $position->competencies->get(2)->id);
+    }
+
+    /** @test */
+    public function it_should_bring_a_record_from_the_future_to_the_past_without_modifying_updated_at()
+    {
+        $employee = Employee::find(1);
+        $this->update($employee, ['name' => 'updated employee 1.1']);
+        $this->update($employee, ['name' => 'updated employee 1.2']);
+        $this->update($employee, ['name' => 'updated employee 1.3']);
+        $this->update($employee, ['name' => 'updated employee 1.4']);
+
+        versioningDate()->setDate('2019-01-01 12:00:02');
+
+        $employee = Employee::find(1);
+
+        $this->assertEquals('updated employee 1.2', $employee->name);
+
+        // Bring a record from the future to the past without changing updated_at
+        DB::table('employees_versioning')
+            ->where('name', 'updated employee 1.2')
+            ->update(['next' => '2019-01-01 12:00:02']);
+
+        DB::table('employees_versioning')
+            ->where('name', 'updated employee 1.3')
+            ->update(['versioned_at' => '2019-01-01 12:00:02']);
+
+        $employee = Employee::find(1);
+
+        $this->assertEquals('updated employee 1.3', $employee->name);
     }
 
     /** @test */

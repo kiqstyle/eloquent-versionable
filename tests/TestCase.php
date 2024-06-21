@@ -57,6 +57,7 @@ abstract class TestCase extends Orchestra
             $table->string('name');
 
             $table->timestamps();
+            $table->dateTime('versioned_at');
             $table->dateTime('next')->nullable();
             $table->softDeletes();
         });
@@ -75,6 +76,7 @@ abstract class TestCase extends Orchestra
             $table->string('name');
 
             $table->timestamps();
+            $table->dateTime('versioned_at');
             $table->dateTime('next')->nullable();
             $table->softDeletes();
         });
@@ -93,6 +95,7 @@ abstract class TestCase extends Orchestra
             $table->string('name');
 
             $table->timestamps();
+            $table->dateTime('versioned_at');
             $table->dateTime('next')->nullable();
             $table->softDeletes();
         });
@@ -115,6 +118,7 @@ abstract class TestCase extends Orchestra
             $table->unsignedInteger('competency_id');
 
             $table->timestamps();
+            $table->dateTime('versioned_at');
             $table->dateTime('next')->nullable();
             $table->softDeletes();
         });
@@ -152,6 +156,7 @@ abstract class TestCase extends Orchestra
         $this->assertEquals($original->deleted_at, $versioned->deleted_at);
 
         $this->assertNotNull($versioned->_id);
+        $this->assertNotNull($versioned->versioned_at);
         $this->assertNull($versioned->next);
     }
 
