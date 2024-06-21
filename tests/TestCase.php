@@ -120,12 +120,12 @@ abstract class TestCase extends Orchestra
         });
 
         collect(range(1, 3))->each(function (int $i) {
-            Position::create(['name' => $i]);
+            Position::create(['name' => 'position ' . $i]);
         });
 
         $position = Position::first();
         collect(range(1, 3))->each(function (int $i) use ($position) {
-            Employee::create(['name' => $i, 'position_id' => $position->id]);
+            Employee::create(['name' => 'employee ' . $i, 'position_id' => $position->id]);
         });
     }
 

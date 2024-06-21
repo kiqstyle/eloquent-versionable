@@ -30,7 +30,7 @@ class VersionablePersistenceTest extends TestCase
 
         $versioned = $this->getVersioned($employee);
 
-        $this->assertEquals('1', $versioned->get(0)->name);
+        $this->assertEquals('employee 1', $versioned->get(0)->name);
         $this->assertEquals($versioned->get(0)->next, $versioned->get(1)->updated_at);
 
         $this->assertEquals('updated', $versioned->get(1)->name);
@@ -49,7 +49,7 @@ class VersionablePersistenceTest extends TestCase
 
         $versioned = $this->getVersioned($employee);
 
-        $this->assertEquals('1', $versioned->get(0)->name);
+        $this->assertEquals('employee 1', $versioned->get(0)->name);
         $this->assertEquals($versioned->get(0)->next, $versioned->get(1)->updated_at);
 
         $this->assertEquals('updated', $versioned->get(1)->name);

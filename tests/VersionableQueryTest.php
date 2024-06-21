@@ -225,4 +225,56 @@ class VersionableQueryTest extends TestCase
         // losing all data that should not be on a transaction
         $this->assertDatabaseHas('employees', ['name' => 'New employee']);
     }
+
+    /** @test */
+    public function it_should_get_recent_registers_with_join()
+    {
+        $employee = Employee::find(1);
+        $this->update($employee, ['name' => 'updated employee 1']);
+
+        $position = Position::find(1);
+        $this->update($position, ['name' => 'updated position 1']);
+
+        $employees = Employee::query()
+            ->select([
+                'employees_versioning.name as employee_name',
+                'positions_versioning.name as position_name',
+            ])
+            ->join('positions_versioning', 'employees_versioning.position_id', '=', 'positions_versioning.id')
+            ->orderBy('employees_versioning.id')
+            ->get();
+
+        $this->assertEquals('updated employee 1', $employees->first()->employee_name);
+        $this->assertEquals('updated position 1', $employees->first()->position_name);
+
+        $this->assertEquals('employee 2', $employees->get(1)->employee_name);
+        $this->assertEquals('updated position 1', $employees->get(1)->position_name);
+
+        $this->assertEquals('employee 3', $employees->get(2)->employee_name);
+        $this->assertEquals('updated position 1', $employees->get(2)->position_name);
+    }
+
+    /** @test */
+    public function it_should_get_old_registers_with_join()
+    {
+        versioningDate()->setDate(now());
+
+        $employee = Employee::find(1);
+        $this->update($employee, ['name' => 'updated employee 1']);
+
+        $position = Position::find(1);
+        $this->update($position, ['name' => 'updated position 1']);
+
+        $employee = Employee::query()
+            ->select([
+                'employees_versioning.name as employee_name',
+                'positions_versioning.name as position_name',
+                'employees_versioning.updated_at as employee_updated_at',
+            ])
+            ->join('positions_versioning', 'employees_versioning.position_id', '=', 'positions_versioning.id')
+            ->find(1);
+
+        $this->assertEquals('employee 1', $employee->employee_name);
+        $this->assertEquals('position 1', $employee->position_name);
+    }
 }
