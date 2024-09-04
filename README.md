@@ -6,6 +6,7 @@ will find the next register with next column with value null, that could be anot
 
 # For contributors
 * INIT
+  * RUN: 'make up'
   * RUN: 'make composer-install'
 * TESTS
-  * RUN: 'make phpunit'
+  * RUN: 'make test'
