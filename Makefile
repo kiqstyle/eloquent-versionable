@@ -17,3 +17,6 @@ test:
 ### UTILS ###
 php-extensions:
 	docker compose exec $(DOCKER_PHP) php -m
+	
+up:
+	docker compose up -d
