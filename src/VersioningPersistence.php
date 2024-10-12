@@ -21,21 +21,24 @@ class VersioningPersistence
 
         $lastVersioned->timestamps = false;
 
-        $lastVersioned->update(['next' => $model->{$model->getUpdatedAtColumn()}]);
+        $dataToUpdate = ['next' => $model->{$model->getUpdatedAtColumn()}];
+        $lastVersioned->update($dataToUpdate);
     }
 
     public function createDeletedVersionedRecord(Model $model): void
     {
         $versionedInstance = self::getVersionedModel($model);
         $versionedInstance->fill($model->getAttributes());
-        $versionedInstance->{$versionedInstance->getUpdatedAtColumn()} = $model->{$model->getUpdatedAtColumn()};
-        $versionedInstance->{$versionedInstance->getDeletedAtColumn()} = $model->{$model->getUpdatedAtColumn()};
+        $versionedInstance->{$versionedInstance->getUpdatedAtColumn()} =
+            $model->{$model->getUpdatedAtColumn()};
+        $versionedInstance->{$versionedInstance->getDeletedAtColumn()} =
+            $model->{$model->getUpdatedAtColumn()};
         $versionedInstance->save();
     }
 
     private static function getVersionedModel(Model $model): VersionedModel
     {
         $versionedClassName = $model->getVersioningModel();
-        return new $versionedClassName;
+        return new $versionedClassName();
     }
 }

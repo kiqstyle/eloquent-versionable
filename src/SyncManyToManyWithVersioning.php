@@ -10,16 +10,21 @@ class SyncManyToManyWithVersioning
     private Model $manyToManyRelation;
     private array $fields = [
         'entityKey' => null,
-        'relationKey' => null
+        'relationKey' => null,
     ];
 
-    public function run(Model $entity, array $newRelationsIds, Model $manyToManyRelation, array $fields)
-    {
+    public function run(
+        Model $entity,
+        array $newRelationsIds,
+        Model $manyToManyRelation,
+        array $fields
+    ) {
         $this->entity = $entity;
         $this->manyToManyRelation = $manyToManyRelation;
         $this->fields = $fields;
 
-        $oldRelationsIds = $manyToManyRelation->where($this->fields['entityKey'], $this->entity->id)
+        $oldRelationsIds = $manyToManyRelation
+            ->where($this->fields['entityKey'], $this->entity->id)
             ->pluck($this->fields['relationKey'])
             ->toArray();
 
@@ -33,7 +38,8 @@ class SyncManyToManyWithVersioning
     private function removeRelations(array $relationsToExclude): void
     {
         foreach ($relationsToExclude as $relationId) {
-            $relationToExclude = $this->manyToManyRelation->where($this->fields['relationKey'], $relationId)
+            $relationToExclude = $this->manyToManyRelation
+                ->where($this->fields['relationKey'], $relationId)
                 ->where($this->fields['entityKey'], $this->entity->id)
                 ->first();
 
@@ -46,7 +52,7 @@ class SyncManyToManyWithVersioning
         foreach ($relationsToInclude as $relationId) {
             $data = [
                 $this->fields['entityKey'] => $this->entity->id,
-                $this->fields['relationKey'] => $relationId
+                $this->fields['relationKey'] => $relationId,
             ];
 
             $this->manyToManyRelation->create($data);
