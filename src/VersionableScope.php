@@ -2,10 +2,9 @@
 
 namespace Kiqstyle\EloquentVersionable;
 
-use Illuminate\Database\Eloquent\Scope;
-
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Scope;
 
 class VersionableScope implements Scope
 {
@@ -14,7 +13,10 @@ class VersionableScope implements Scope
      */
     public function apply(Builder $builder, Model|Versionable $model): void
     {
-        if (! versioningDate()->issetDate() || ($model->isVersioningEnabled() !== true)) {
+        if (
+            ! versioningDate()->issetDate()
+            || ($model->isVersioningEnabled() !== true)
+        ) {
             return;
         }
 
@@ -22,17 +24,25 @@ class VersionableScope implements Scope
 
         $updatedAt = $model->getUpdatedAtColumn();
         $next = $model->getQualifiedNxtColumn();
-        $builder->where($model->getVersioningTable() . '.' . $updatedAt, '<=', $datetime)
-            ->where(fn (Builder $q) => $q->where($next, '>', $datetime)->orWhereNull($next));
+        $updatedAtField = $model->getVersioningTable() . '.' . $updatedAt;
+        $nextIsBiggerThanDatetimeOrNextIsNull = fn (Builder $q) =>
+            $q->where($next, '>', $datetime)->orWhereNull($next);
+        $builder->where($updatedAtField, '<=', $datetime)
+            ->where($nextIsBiggerThanDatetimeOrNextIsNull);
 
         $joins = $builder->getQuery()->joins ?? [];
         foreach ($joins as $join) {
             if (str_contains($join->table, '_versioning')) {
-                $builder->where($join->table . '.' . $updatedAt, '<=', $datetime)
-                    ->whereNull($join->table . '.' . $model->getDeletedAtColumn())
-                    ->where(function (Builder $q) use ($datetime, $join, $model) {
-                        $q->where($join->table . '.' . $model->getNextColumn(), '>', $datetime)
-                            ->orWhereNull($join->table . '.' . $model->getNextColumn());
+                $table = $join->table;
+                $updatedAtField = $table . '.' . $updatedAt;
+                $nextField = $table . '.' . $model->getNextColumn();
+                $deletedAtField = $table . '.' . $model->getDeletedAtColumn();
+
+                $builder->where($updatedAtField, '<=', $datetime)
+                    ->whereNull($deletedAtField)
+                    ->where(function (Builder $q) use ($datetime, $nextField) {
+                        $q->where($nextField, '>', $datetime)
+                            ->orWhereNull($nextField);
                     });
             }
         }
