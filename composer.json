@@ -24,7 +24,8 @@
     "require-dev": {
         "phpunit/phpunit" : "^9.3.3|^10.0",
         "orchestra/testbench": "^7.0",
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "nunomaduro/phpinsights": "^2.11"
     },
     "autoload": {
         "psr-4": {
@@ -44,6 +45,11 @@
     "autoload-dev": {
         "psr-4": {
             "Kiqstyle\\EloquentVersionable\\Test\\": "tests"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }
