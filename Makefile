@@ -34,6 +34,10 @@ php-extensions:
 up:
 	docker compose up -d
 
+build:
+	docker compose build $(DOCKER_PHP)
+	make up
+
 ### PHPMD COMMANDS ###
 phpmd:
 	docker compose exec $(DOCKER_PHP) ./vendor/bin/phpmd src text cleancode,codesize,controversial,design,naming,unusedcode
