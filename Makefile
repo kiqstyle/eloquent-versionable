@@ -7,6 +7,9 @@ composer-install:
 composer-update:
 	docker compose exec $(DOCKER_PHP) composer update
 
+composer-update-lock:
+	docker compose exec $(DOCKER_PHP) composer update --lock
+
 composer-autoload:
 	docker compose exec $(DOCKER_PHP) composer dumpautoload
 
@@ -34,3 +37,9 @@ up:
 build:
 	docker compose build $(DOCKER_PHP)
 	make up
+
+### PHPMD COMMANDS ###
+phpmd:
+	docker compose exec $(DOCKER_PHP) ./vendor/bin/phpmd src text cleancode,codesize,controversial,design,naming,unusedcode
+
+
