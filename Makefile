@@ -22,7 +22,7 @@ test:
 
 ### INSIGHTS COMMANDS ###
 insights:
-	docker compose exec $(DOCKER_PHP) ./vendor/bin/phpinsights
+	docker compose exec $(DOCKER_PHP) ./vendor/bin/phpinsights --config-path=config/phpinsights.php --no-interaction --ansi
 
 insights-analyse:
 	docker compose exec $(DOCKER_PHP) ./vendor/bin/phpinsights analyse $(path)
