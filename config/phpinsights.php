@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff;
+
 return [
 
     /*
@@ -68,6 +70,10 @@ return [
         //  ExampleInsight::class => [
         //      'key' => 'value',
         //  ],
+        LineLengthSniff::class => [
+            'lineLimit' => 120,
+            'absoluteLineLimit' => 120,
+        ],
     ],
 
     /*
@@ -82,10 +88,10 @@ return [
     */
 
     'requirements' => [
-       'min-quality' => 85,
-       'min-complexity' => 83.3,
-       'min-architecture' => 76.5,
-       'min-style' => 98.8,
+        'min-quality' => 91,
+        'min-complexity' => 83.3,
+        'min-architecture' => 82.4,
+        'min-style' => 100,
 //        'disable-security-check' => false,
     ],
 
