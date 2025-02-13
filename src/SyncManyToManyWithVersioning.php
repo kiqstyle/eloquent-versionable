@@ -18,7 +18,7 @@ class SyncManyToManyWithVersioning
         array $newRelationsIds,
         Model $manyToManyRelation,
         array $fields
-    ) {
+    ): void {
         $this->entity = $entity;
         $this->manyToManyRelation = $manyToManyRelation;
         $this->fields = $fields;
