@@ -13,10 +13,7 @@ class VersionableScope implements Scope
      */
     public function apply(Builder $builder, Model|Versionable $model): void
     {
-        if (
-            ! versioningDate()->issetDate()
-            || ($model->isVersioningEnabled() !== true)
-        ) {
+        if (! versioningDate()->issetDate() || ($model->isVersioningEnabled() !== true)) {
             return;
         }
 
@@ -26,8 +23,7 @@ class VersionableScope implements Scope
         $next = $model->getQualifiedNxtColumn();
         $updatedAtField = $model->getVersioningTable() . '.' . $updatedAt;
         $nextIsBiggerThanDatetimeOrNextIsNull = fn (Builder $q) => $q->where($next, '>', $datetime)->orWhereNull($next);
-        $builder->where($updatedAtField, '<=', $datetime)
-            ->where($nextIsBiggerThanDatetimeOrNextIsNull);
+        $builder->where($updatedAtField, '<=', $datetime)->where($nextIsBiggerThanDatetimeOrNextIsNull);
 
         $joins = $builder->getQuery()->joins ?? [];
         foreach ($joins as $join) {
@@ -40,8 +36,7 @@ class VersionableScope implements Scope
                 $builder->where($updatedAtField, '<=', $datetime)
                     ->whereNull($deletedAtField)
                     ->where(function (Builder $q) use ($datetime, $nextField): void {
-                        $q->where($nextField, '>', $datetime)
-                            ->orWhereNull($nextField);
+                        $q->where($nextField, '>', $datetime)->orWhereNull($nextField);
                     });
             }
         }

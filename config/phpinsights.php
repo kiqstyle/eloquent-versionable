@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
+use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses;
+use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenTraits;
+use NunoMaduro\PhpInsights\Domain\Sniffs\ForbiddenSetterSniff;
 use PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff;
+use SlevomatCodingStandard\Sniffs\Functions\FunctionLengthSniff;
 
 return [
 
@@ -63,7 +67,9 @@ return [
     ],
 
     'remove' => [
-        //  ExampleInsight::class,
+        ForbiddenTraits::class,
+        ForbiddenNormalClasses::class,
+        ForbiddenSetterSniff::class,
     ],
 
     'config' => [
@@ -73,6 +79,9 @@ return [
         LineLengthSniff::class => [
             'lineLimit' => 120,
             'absoluteLineLimit' => 120,
+        ],
+        FunctionLengthSniff::class => [
+            'maxLinesLength' => 25,
         ],
     ],
 
@@ -90,7 +99,7 @@ return [
     'requirements' => [
         'min-quality' => 91,
         'min-complexity' => 83.3,
-        'min-architecture' => 82.4,
+        'min-architecture' => 93.3,
         'min-style' => 100,
 //        'disable-security-check' => false,
     ],
