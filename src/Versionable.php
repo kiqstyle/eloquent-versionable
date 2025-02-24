@@ -15,14 +15,14 @@ trait Versionable
     {
         static::addGlobalScope(new VersionableScope());
 
-        $callback = function (Model $model) {
+        $callback = function (Model $model): void {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 DB::beginTransaction();
             }
         };
         static::saving($callback);
 
-        static::saved(function (Model $model) {
+        static::saved(function (Model $model): void {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 try {
                     app(VersioningPersistence::class)
@@ -37,7 +37,7 @@ trait Versionable
 
         static::updating($callback);
 
-        static::updated(function (Model $model) {
+        static::updated(function (Model $model): void {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 try {
                     app(VersioningPersistence::class)
@@ -50,13 +50,13 @@ trait Versionable
             }
         });
 
-        static::deleting(function (Model $model) {
+        static::deleting(function (Model $model): void {
             if ($model->isVersioningEnabled()) {
                 DB::beginTransaction();
             }
         });
 
-        static::deleted(function (Model $model) {
+        static::deleted(function (Model $model): void {
             if ($model->isVersioningEnabled()) {
                 try {
                     app(VersioningPersistence::class)
@@ -110,7 +110,9 @@ trait Versionable
     {
         if (! isset($this->table)) {
             return str_replace(
-                '\\', '', Str::snake(Str::plural(class_basename($this)))
+                '\\',
+                '',
+                Str::snake(Str::plural(class_basename($this)))
             );
         }
 
@@ -155,7 +157,7 @@ trait Versionable
      */
     public function getNextColumn(): string
     {
-        return ($this::NEXT_COLUMN !== null) ? $this::NEXT_COLUMN : 'next';
+        return $this::NEXT_COLUMN !== null ? $this::NEXT_COLUMN : 'next';
     }
 
     /**
