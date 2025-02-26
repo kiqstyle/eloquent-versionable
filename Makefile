@@ -16,9 +16,18 @@ composer-autoload:
 composer-require:
 	docker compose exec $(DOCKER_PHP) composer require $(package)
 
+composer-remove:
+	docker compose exec $(DOCKER_PHP) composer remove $(package)
+
+composer-why:
+	docker compose exec $(DOCKER_PHP) composer why $(package)
+
 ### TESTS ###
-test:
-	docker compose exec $(DOCKER_PHP) ./vendor/bin/phpunit $(param) --no-coverage
+test-with-coverage:
+	docker compose exec $(DOCKER_PHP) php -dpcov.enabled=1 -dpcov.directory=. -dpcov.exclude="~vendor~" ./vendor/bin/pest --coverage --min=92
+
+test-init:
+	docker compose exec $(DOCKER_PHP) ./vendor/bin/pest --init
 
 ### INSIGHTS COMMANDS ###
 insights:
