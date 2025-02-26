@@ -29,6 +29,9 @@ jobs:
           curl -sS https://getcomposer.org/installer | php
           mv composer.phar /usr/local/bin/composer
 
+      - name: Install pcov by pecl and enable
+        run: pecl install pcov && docker-php-ext-enable pcov
+
       - name: Install Dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
 
