@@ -59,10 +59,10 @@ trait Versionable
         static::deleted(function (Model $model): void {
             if ($model->isVersioningEnabled()) {
                 try {
-                    app(VersioningPersistence::class)
-                        ->updateNextColumnOfLastVersionedRegister($model);
-                    app(VersioningPersistence::class)
-                        ->createDeletedVersionedRecord($model);
+                    app(VersioningPersistence::class)->updateNextColumnOfLastVersionedRegister($model);
+                    app(VersioningPersistence::class)->createDeletedVersionedRecord($model);
+                    app(VersioningPersistence::class)->deleteCascadeRelations($model);
+
                     DB::commit();
                 } catch (Exception $e) {
                     DB::rollBack();

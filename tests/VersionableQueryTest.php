@@ -124,9 +124,7 @@ class VersionableQueryTest extends TestCase
     public function it_finds_versioned_results_with_many_to_many_relationship_based_on_versioning_date()
     {
         $position = Position::first();
-        $competencies = collect(range(1, 3))->map(function (int $i) {
-            return Competency::create(['name' => $i]);
-        });
+        $competencies = Competency::all();
 
         $this->setFakeNow('2019-01-01 12:00:01');
         (new SyncManyToManyWithVersioning)->run($position, $competencies->pluck('id')->toArray(), new PositionCompetency, ['entityKey' => 'position_id', 'relationKey' => 'competency_id']);
