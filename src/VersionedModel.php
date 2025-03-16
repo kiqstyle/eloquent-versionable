@@ -15,7 +15,7 @@ class VersionedModel extends Model implements VersionableContract
 
     public const VERSIONING_MODEL = null;
 
-    public $onDeleteCascadeRelations = [];
+    public array $onDeleteCascadeRelations = [];
 
     protected $versioningEnabled = true;
 

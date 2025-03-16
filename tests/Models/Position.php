@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Position extends VersionedModel
 {
-    public $onDeleteCascadeRelations = ['positionCompetencies'];
+    public array $onDeleteCascadeRelations = ['positionCompetencies'];
 
     public function competencies(): BelongsToMany
     {
