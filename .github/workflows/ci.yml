@@ -36,4 +36,4 @@ jobs:
         run: ./vendor/bin/phpunit
 
       - name: Run PHP insights
-        run: ./vendor/bin/phpinsights
+        run: ./vendor/bin/phpinsights --config-path=config/phpinsights.php --no-interaction --ansi
