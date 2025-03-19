@@ -36,6 +36,12 @@ class VersioningPersistence
         $versionedInstance->save();
     }
 
+    public function deleteCascadeRelations(VersionedModel $model): void
+    {
+        $deleteRelations = fn (string $relation) => $model->$relation->each->delete();
+        collect($model->onDeleteCascadeRelations)->each($deleteRelations);
+    }
+
     private static function getVersionedModel(Model $model): VersionedModel
     {
         $versionedClassName = $model->getVersioningModel();

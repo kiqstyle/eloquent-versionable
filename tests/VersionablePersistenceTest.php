@@ -63,9 +63,7 @@ class VersionablePersistenceTest extends TestCase
     public function it_sync_versioning_register_on_many_to_many_service()
     {
         $position = Position::first();
-        $competencies = collect(range(1, 3))->map(function (int $i) {
-            return Competency::create(['name' => $i]);
-        });
+        $competencies = Competency::all();
 
         (new SyncManyToManyWithVersioning)->run($position, $competencies->pluck('id')->toArray(), new PositionCompetency, ['entityKey' => 'position_id', 'relationKey' => 'competency_id']);
 
@@ -145,7 +143,6 @@ class VersionablePersistenceTest extends TestCase
         $this->assertEquals(3, $databaseVersionedRegisters[5]->competency_id);
         $this->assertNull($databaseVersionedRegisters[5]->next);
         $this->assertNotNull($databaseVersionedRegisters[5]->deleted_at);
-
 
         $this->assertEquals(7, $databaseVersionedRegisters[6]->_id);
         $this->assertEquals(4, $databaseVersionedRegisters[6]->id);

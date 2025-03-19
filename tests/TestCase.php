@@ -9,6 +9,8 @@ use Kiqstyle\EloquentVersionable\Test\Models\Employee;
 use Kiqstyle\EloquentVersionable\Test\Models\Position;
 use Kiqstyle\EloquentVersionable\VersioningServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
+use Kiqstyle\EloquentVersionable\Test\Models\Competency;
+use Kiqstyle\EloquentVersionable\Test\Models\CompetencyLevel;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
@@ -19,6 +21,7 @@ abstract class TestCase extends Orchestra
 
         $this->setFakeNow('2019-01-01 12:00:00');
         $this->setUpDatabase();
+        $this->populateDatabase();
     }
 
     protected function getPackageProviders($app)
@@ -40,7 +43,9 @@ abstract class TestCase extends Orchestra
 
     protected function setUpDatabase(): void
     {
-        $this->app['db']->connection()->getSchemaBuilder()->create('employees', function (Blueprint $table) {
+        $schemaBuilder = $this->app['db']->connection()->getSchemaBuilder();
+
+        $schemaBuilder->create('employees', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('position_id')->nullable();
             $table->string('name');
@@ -79,7 +84,7 @@ abstract class TestCase extends Orchestra
             $table->softDeletes();
         });
 
-        $this->app['db']->connection()->getSchemaBuilder()->create('competencies', function (Blueprint $table) {
+        $schemaBuilder->create('competencies', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
 
@@ -87,7 +92,7 @@ abstract class TestCase extends Orchestra
             $table->softDeletes();
         });
 
-        $this->app['db']->connection()->getSchemaBuilder()->create('competencies_versioning', function (Blueprint $table) {
+        $schemaBuilder->create('competencies_versioning', function (Blueprint $table) {
             $table->increments('_id');
             $table->unsignedInteger('id');
             $table->string('name');
@@ -97,7 +102,7 @@ abstract class TestCase extends Orchestra
             $table->softDeletes();
         });
 
-        $this->app['db']->connection()->getSchemaBuilder()->create('position_competency', function (Blueprint $table) {
+        $schemaBuilder->create('position_competency', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('position_id');
             $table->unsignedInteger('competency_id');
@@ -108,7 +113,7 @@ abstract class TestCase extends Orchestra
             $table->softDeletes();
         });
 
-        $this->app['db']->connection()->getSchemaBuilder()->create('position_competency_versioning', function (Blueprint $table) {
+        $schemaBuilder->create('position_competency_versioning', function (Blueprint $table) {
             $table->increments('_id');
             $table->unsignedInteger('id');
             $table->unsignedInteger('position_id');
@@ -118,15 +123,38 @@ abstract class TestCase extends Orchestra
             $table->dateTime('next')->nullable();
             $table->softDeletes();
         });
+        
+        $schemaBuilder->create('competency_levels', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->unsignedInteger('competency_id');
 
-        collect(range(1, 3))->each(function (int $i) {
-            Position::create(['name' => $i]);
+            $table->foreign('competency_id')->on('id')->references('competencies');
+            $table->timestamps();
+            $table->softDeletes();
         });
 
-        $position = Position::first();
-        collect(range(1, 3))->each(function (int $i) use ($position) {
-            Employee::create(['name' => $i, 'position_id' => $position->id]);
+        $schemaBuilder->create('competency_levels_versioning', function (Blueprint $table) {
+            $table->increments('_id');
+            $table->unsignedInteger('id');
+            $table->string('name');
+            $table->unsignedInteger('competency_id');
+
+            $table->timestamps();
+            $table->dateTime('next')->nullable();
+            $table->softDeletes();
         });
+    }
+
+    private function populateDatabase(): void
+    {
+        $positionId = 1;
+        $competencyId = 1;
+        collect(range(1, 3))->each(fn (int $i) => Position::create(['name' => $i]));
+        collect(range(1, 3))->each(fn (int $i) => Competency::create(['name' => $i]));
+        collect(range(1, 3))->each(fn (int $i) => Employee::create(['name' => $i, 'position_id' => $positionId]));
+        collect(range(1, 3))
+            ->each(fn (int $i) => CompetencyLevel::create(['name' => $i, 'competency_id' => $competencyId]));
     }
 
     protected function update(Model $entity, array $attributes)

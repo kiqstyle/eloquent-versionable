@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenNormalClasses;
+use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenSecurityIssues;
 use NunoMaduro\PhpInsights\Domain\Insights\ForbiddenTraits;
 use NunoMaduro\PhpInsights\Domain\Sniffs\ForbiddenSetterSniff;
 use PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff;
 use SlevomatCodingStandard\Sniffs\Functions\FunctionLengthSniff;
+use SlevomatCodingStandard\Sniffs\TypeHints\DeclareStrictTypesSniff;
 
 return [
 
@@ -67,8 +69,10 @@ return [
     ],
 
     'remove' => [
+        DeclareStrictTypesSniff::class,
         ForbiddenTraits::class,
         ForbiddenNormalClasses::class,
+        ForbiddenSecurityIssues::class,
         ForbiddenSetterSniff::class,
     ],
 
@@ -97,8 +101,8 @@ return [
     */
 
     'requirements' => [
-        'min-quality' => 91,
-        'min-complexity' => 83.3,
+        'min-quality' => 91.8,
+        'min-complexity' => 84,
         'min-architecture' => 93.3,
         'min-style' => 100,
 //        'disable-security-check' => false,
