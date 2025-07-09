@@ -15,17 +15,18 @@ trait Versionable
     {
         static::addGlobalScope(new VersionableScope());
 
-        $callback = function (Versionable|Model $model) {
+        $callback = function (Versionable|Model $model): void {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 DB::beginTransaction();
             }
         };
         static::saving($callback);
 
-        static::saved(function (Versionable|Model $model) {
+        static::saved(function (Versionable|Model $model): void {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 try {
-                    app(VersioningPersistence::class)->createVersionedRecord($model);
+                    app(VersioningPersistence::class)
+                        ->createVersionedRecord($model);
                     DB::commit();
                 } catch (Exception $e) {
                     DB::rollBack();
@@ -36,10 +37,11 @@ trait Versionable
 
         static::updating($callback);
 
-        static::updated(function (Versionable|Model $model) {
+        static::updated(function (Versionable|Model $model): void {
             if ($model->isVersioningEnabled() && $model->isDirty()) {
                 try {
-                    app(VersioningPersistence::class)->updateNextColumnOfLastVersionedRegister($model);
+                    app(VersioningPersistence::class)
+                        ->updateNextColumnOfLastVersionedRegister($model);
                     DB::commit();
                 } catch (Exception $e) {
                     DB::rollBack();
@@ -48,17 +50,19 @@ trait Versionable
             }
         });
 
-        static::deleting(function (Versionable|Model $model) {
+        static::deleting(function (Versionable|Model $model): void {
             if ($model->isVersioningEnabled()) {
                 DB::beginTransaction();
             }
         });
 
-        static::deleted(function (Versionable|Model $model) {
+        static::deleted(function (Versionable|Model $model): void {
             if ($model->isVersioningEnabled()) {
                 try {
-                    app(VersioningPersistence::class)->updateNextColumnOfLastVersionedRegister($model);
-                    app(VersioningPersistence::class)->createDeletedVersionedRecord($model);
+                    app(VersioningPersistence::class)
+                        ->updateNextColumnOfLastVersionedRegister($model);
+                    app(VersioningPersistence::class)
+                        ->createDeletedVersionedRecord($model);
                     DB::commit();
                 } catch (Exception $e) {
                     DB::rollBack();
@@ -91,7 +95,8 @@ trait Versionable
 
     public function getTable(): string
     {
-        [$one, $two, $three, $caller] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
+        [$one, $two, $three, $caller] =
+            debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);
         $calledBy = $caller['function'];
 
         $methods = [
@@ -104,7 +109,11 @@ trait Versionable
             'addUpdatedAtColumn',
         ];
 
-        if (versioningDate()->issetDate() && ($this->isVersioningEnabled() && !in_array($calledBy, $methods))) {
+        if (
+            versioningDate()->issetDate()
+            && ($this->isVersioningEnabled()
+            && ! in_array($calledBy, $methods))
+        ) {
             return $this->getVersioningTable();
         }
 
@@ -115,7 +124,9 @@ trait Versionable
     {
         if (! isset($this->table)) {
             return str_replace(
-                '\\', '', Str::snake(Str::plural(class_basename($this)))
+                '\\',
+                '',
+                Str::snake(Str::plural(class_basename($this)))
             );
         }
 
@@ -139,18 +150,20 @@ trait Versionable
 
     public function getVersioningModel(): string
     {
-        return ($this::VERSIONING_MODEL !== null) ? $this::VERSIONING_MODEL : $this->guessVersioningClassName();
-    }
+        if ($this::VERSIONING_MODEL !== null) {
+            return $this::VERSIONING_MODEL;
+        }
 
-    private function guessVersioningClassName(): string
-    {
-        $class = new ReflectionClass(get_class($this));
-        return $class->getNamespaceName() . '\\Versioning\\'  . $class->getShortName(). 'Versioning';
+        return $this->guessVersioningClassName();
     }
 
     public function getVersioningTable(): string
     {
-        return $this::VERSIONED_TABLE !== null ? $this::VERSIONED_TABLE : $this->getOriginalTable() . '_versioning';
+        if ($this::VERSIONED_TABLE !== null) {
+            return $this::VERSIONED_TABLE;
+        }
+
+        return $this->getOriginalTable() . '_versioning';
     }
 
     /**
@@ -158,7 +171,7 @@ trait Versionable
      */
     public function getNextColumn(): string
     {
-        return ($this::NEXT_COLUMN !== null) ? $this::NEXT_COLUMN : 'next';
+        return $this::NEXT_COLUMN !== null ? $this::NEXT_COLUMN : 'next';
     }
 
     /**
@@ -174,7 +187,8 @@ trait Versionable
      */
     public function now(): Builder
     {
-        return with(new static)->newQueryWithoutScope(new VersionableScope());
+        return with(new static())
+            ->newQueryWithoutScope(new VersionableScope());
     }
 
     public function getQualifiedVersioningKeyName(): string
@@ -187,10 +201,11 @@ trait Versionable
      */
     public function newInstance($attributes = [], $exists = false)
     {
-        // This method just provides a convenient way for us to generate fresh model
-        // instances of this current model. It is particularly useful during the
-        // hydration of new objects via the Eloquent query builder instances.
-        $model = new static();
+        // This method just provides a convenient way for us to generate fresh
+        // model instances of this current model. It is particularly useful
+        // during the hydration of new objects via the Eloquent query
+        // builder instances.
+        $model = new static((array) $attributes);
 
         $model->exists = $exists;
 
@@ -202,5 +217,14 @@ trait Versionable
         $model->fill($attributes);
 
         return $model;
+    }
+
+    private function guessVersioningClassName(): string
+    {
+        $class = new ReflectionClass(get_class($this));
+        return $class->getNamespaceName()
+            . '\\Versioning\\'
+            . $class->getShortName()
+            . 'Versioning';
     }
 }

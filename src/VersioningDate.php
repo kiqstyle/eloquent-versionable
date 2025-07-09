@@ -31,11 +31,6 @@ class VersioningDate
         return $this->date;
     }
 
-    public function unsetDate(): void
-    {
-        $this->date = null;
-    }
-
     public function issetDate(): bool
     {
         return (bool) $this->date;
