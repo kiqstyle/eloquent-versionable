@@ -79,7 +79,7 @@ trait Versionable
         }
     }
 
-    public function updateLastVersion(array $attributes = [], array $options = [])
+    public function updateLastVersion(array $attributes = [], array $options = []): bool
     {
         $versionedModel = app($this->getVersioningModel());
 
@@ -199,13 +199,13 @@ trait Versionable
     /**
      * Create a new instance of the given model.
      */
-    public function newInstance($attributes = [], $exists = false)
+    public function newInstance($attributes = [], $exists = false): static
     {
         // This method just provides a convenient way for us to generate fresh
         // model instances of this current model. It is particularly useful
         // during the hydration of new objects via the Eloquent query
         // builder instances.
-        $model = new static((array) $attributes);
+        $model = new static($attributes);
 
         $model->exists = $exists;
 
@@ -221,7 +221,7 @@ trait Versionable
 
     private function guessVersioningClassName(): string
     {
-        $class = new ReflectionClass(get_class($this));
+        $class = new ReflectionClass($this::class);
         return $class->getNamespaceName()
             . '\\Versioning\\'
             . $class->getShortName()
