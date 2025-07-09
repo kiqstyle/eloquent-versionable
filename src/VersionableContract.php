@@ -17,4 +17,6 @@ interface VersionableContract
     public function getNextColumn();
 
     public function now();
+
+    public function updateLastVersion(array $attributes = [], array $options = []);
 }

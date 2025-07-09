@@ -75,6 +75,20 @@ trait Versionable
         }
     }
 
+    public function updateLastVersion(array $attributes = [], array $options = [])
+    {
+        $versionedModel = app($this->getVersioningModel());
+
+        $lastVersion = $versionedModel::withoutGlobalScopes()
+            ->where('id', $this->id)
+            ->orderByDesc('_id')
+            ->first();
+
+        $lastVersion->forceFill($attributes);
+        $lastVersion->timestamps = false;
+        return $lastVersion->saveQuietly($options);
+    }
+
     public function getTable(): string
     {
         [$one, $two, $three, $caller] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 4);

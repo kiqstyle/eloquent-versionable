@@ -2,6 +2,7 @@
 
 namespace Kiqstyle\EloquentVersionable\Test;
 
+use Carbon\Carbon;
 use Kiqstyle\EloquentVersionable\SyncManyToManyWithVersioning;
 use Kiqstyle\EloquentVersionable\Test\Models\Competency;
 use Kiqstyle\EloquentVersionable\Test\Models\Employee;
@@ -38,6 +39,24 @@ class VersionablePersistenceTest extends TestCase
 
         $this->assertOriginalEqualsVersioning($employee, $versioned->get(2));
         $this->assertNull($versioned->get(2)->deleted_at);
+    }
+
+    /** @test */
+    public function it_updates_latest_versioning_register_on_model_update_latest_version()
+    {
+        $employee = Employee::first();
+        $this->update($employee, ['name' => 'updated']);
+
+        Carbon::setTestNow(Carbon::now()->addSecond());
+        $employee->updateLastVersion(['name' => 'updated 2']);
+
+        $versioned = $this->getVersioned($employee);
+
+        $this->assertEquals('employee 1', $versioned->get(0)->name);
+        $this->assertEquals($versioned->get(0)->next, $versioned->get(1)->updated_at);
+
+        $this->assertEquals('updated 2', $versioned->get(1)->name);
+        $this->assertNull($versioned->get(1)->next);
     }
 
     /** @test */
