@@ -31,6 +31,11 @@ class VersioningDate
         return $this->date;
     }
 
+    public function resetDate(): void
+    {
+        $this->date = Carbon::now()->addDay();
+    }
+
     public function issetDate(): bool
     {
         return (bool) $this->date;

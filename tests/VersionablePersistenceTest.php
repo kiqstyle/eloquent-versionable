@@ -9,11 +9,12 @@ use Kiqstyle\EloquentVersionable\Test\Models\Employee;
 use Kiqstyle\EloquentVersionable\Test\Models\Position;
 use Kiqstyle\EloquentVersionable\Test\Models\PositionCompetency;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\Test;
 
 class VersionablePersistenceTest extends TestCase
 {
 
-    /** @test */
+    #[Test]
     public function it_creates_versioning_register_on_model_create()
     {
         $employee = Employee::first();
@@ -22,7 +23,7 @@ class VersionablePersistenceTest extends TestCase
         $this->assertOriginalEqualsVersioning($employee, $versioned->get(0));
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_versioning_register_on_model_update()
     {
         $employee = Employee::first();
@@ -41,7 +42,7 @@ class VersionablePersistenceTest extends TestCase
         $this->assertNull($versioned->get(2)->deleted_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_latest_versioning_register_on_model_update_latest_version()
     {
         $employee = Employee::first();
@@ -59,7 +60,7 @@ class VersionablePersistenceTest extends TestCase
         $this->assertNull($versioned->get(1)->next);
     }
 
-    /** @test */
+    #[Test]
     public function it_works_with_soft_delete()
     {
         $employee = Employee::first();
@@ -78,7 +79,7 @@ class VersionablePersistenceTest extends TestCase
         $this->assertNotNull($versioned->get(2)->deleted_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_sync_versioning_register_on_many_to_many_service()
     {
         $position = Position::first();

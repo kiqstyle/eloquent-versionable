@@ -11,10 +11,11 @@ use Kiqstyle\EloquentVersionable\Test\Models\Position;
 use Kiqstyle\EloquentVersionable\Test\Models\PositionCompetency;
 use Kiqstyle\EloquentVersionable\VersioningPersistence;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 
 class VersionableQueryTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function it_finds_last_versioned_register()
     {
         $employee = Employee::first();
@@ -28,8 +29,7 @@ class VersionableQueryTest extends TestCase
 
         $this->assertOriginalEqualsVersioning($employee, $versionedDummy);
     }
-
-    /** @test */
+    #[Test]
     public function it_works_with_soft_delete()
     {
         $employee = Employee::first();
@@ -43,8 +43,7 @@ class VersionableQueryTest extends TestCase
 
         $this->assertOriginalEqualsVersioning($employee, $versioned->get(2));
     }
-
-    /** @test */
+    #[Test]
     public function it_finds_old_registers_based_on_versioning_date()
     {
         $employee = Employee::first();
@@ -60,8 +59,7 @@ class VersionableQueryTest extends TestCase
         $this->assertEquals($employee->name, 'updated 2019');
         $this->assertNotNull($employee->next);
     }
-
-    /** @test */
+    #[Test]
     public function it_works_with_update_or_create()
     {
         $this->setFakeNow('2019-01-01 12:00:01');
@@ -75,8 +73,7 @@ class VersionableQueryTest extends TestCase
 
         $this->assertOriginalEqualsVersioning($employee, $versioned->get(1));
     }
-
-    /** @test */
+    #[Test]
     public function it_finds_versioned_results_with_has_one()
     {
         $employee = Employee::with('position')->first();
@@ -87,8 +84,7 @@ class VersionableQueryTest extends TestCase
 
         $this->assertOriginalEqualsVersioning($employee->position, $versioned->get(2));
     }
-
-    /** @test */
+    #[Test]
     public function it_works_with_soft_delete_in_has_one()
     {
         $employee = Employee::with('position')->first();
@@ -102,8 +98,7 @@ class VersionableQueryTest extends TestCase
 
         $this->assertOriginalEqualsVersioning($position, $versioned->get(2));
     }
-
-    /** @test */
+    #[Test]
     public function it_finds_versioned_results_with_has_one_based_on_versioning_date()
     {
         $employee = Employee::with('position')->first();
@@ -119,8 +114,7 @@ class VersionableQueryTest extends TestCase
         $this->assertEquals('updated 2019', $employee->position->name);
         $this->assertNotNull($employee->position->next);
     }
-
-    /** @test */
+    #[Test]
     public function it_finds_versioned_results_with_many_to_many_relationship_based_on_versioning_date()
     {
         $position = Position::first();
@@ -146,8 +140,7 @@ class VersionableQueryTest extends TestCase
         $this->assertEquals(2, $position->competencies->get(1)->id);
         $this->assertEquals(3, $position->competencies->get(2)->id);
     }
-
-    /** @test */
+    #[Test]
     public function it_should_not_create_original_register_when_versioning_fail()
     {
         $this->expectException(Exception::class);
@@ -164,8 +157,7 @@ class VersionableQueryTest extends TestCase
         $this->assertDatabaseMissing('employees', ['name' => 'New employee']);
         $this->assertDatabaseMissing('employees_versioning', ['name' => 'New employee']);
     }
-
-    /** @test */
+    #[Test]
     public function it_should_not_update_original_register_when_versioning_fail()
     {
         $this->expectException(Exception::class);
@@ -187,8 +179,7 @@ class VersionableQueryTest extends TestCase
         $this->assertDatabaseMissing('employees_versioning', ['name' => 'New employee', 'next' => '2020-01-01 12:00:00']);
         $this->assertDatabaseMissing('employees_versioning', ['name' => 'Updated employee', 'updated_at' => '2020-01-01 12:00:00', 'next' => null]);
     }
-
-    /** @test */
+    #[Test]
     public function it_should_not_delete_original_register_when_versioning_fail()
     {
         $this->expectException(Exception::class);
@@ -209,8 +200,7 @@ class VersionableQueryTest extends TestCase
         $this->assertDatabaseMissing('employees_versioning', ['name' => 'New employee', 'next' => '2020-01-01 12:00:00', 'deleted_at' => null]);
         $this->assertDatabaseMissing('employees_versioning', ['name' => 'New employee', 'deleted_at' => '2020-01-01 12:00:00', 'next' => null]);
     }
-
-    /** @test */
+    #[Test]
     public function it_should_not_let_a_transaction_opened()
     {
         $employee = Employee::create(['name' => 'zika']);
@@ -225,8 +215,7 @@ class VersionableQueryTest extends TestCase
         // losing all data that should not be on a transaction
         $this->assertDatabaseHas('employees', ['name' => 'New employee']);
     }
-
-    /** @test */
+    #[Test]
     public function it_should_get_recent_registers_with_join()
     {
         $employee = Employee::find(1);
@@ -253,8 +242,7 @@ class VersionableQueryTest extends TestCase
         $this->assertEquals('employee 3', $employees->get(2)->employee_name);
         $this->assertEquals('updated position 1', $employees->get(2)->position_name);
     }
-
-    /** @test */
+    #[Test]
     public function it_should_get_old_registers_with_join()
     {
         versioningDate()->setDate(now());
